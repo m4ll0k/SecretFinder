@@ -154,7 +154,7 @@ def parser_file(content,mode=1,more_regex=None,no_dup=1):
         if len(content) > 1000000:
             content = content.replace(";",";\r\n").replace(",",",\r\n")
         else:
-            content = jsbeautifier.minify(content)
+            content = jsbeautifier.beautify(content)
     all_items = []
     for regex in _regex.items():
         r = re.compile(regex[1],re.VERBOSE)
