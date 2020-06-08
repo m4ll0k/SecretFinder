@@ -116,7 +116,9 @@ _regex = {
     'pgp_private_block' : r'-----BEGIN PGP PRIVATE KEY BLOCK-----',
     'json_web_token' : r'ey[A-Za-z0-9-_=]+\.[A-Za-z0-9-_=]+\.?[A-Za-z0-9-_.+/=]*$',
     
-    'my_custom_regex' : r'my-regex-xxxxxxx',
+    'name_for_my_regex' : r'my_regex', 
+    # for example
+    'example_api_key'    : r'^example\w+{10,50}'
 }
 
 ```
