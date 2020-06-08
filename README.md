@@ -86,7 +86,7 @@ $ python SecretFinder.py
 
 ## add Regex
 
-- Open `SecretFinder.py` and add your regex here:
+- Open `SecretFinder.py` and add your regex:
 
 ```py
 _regex = {
