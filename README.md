@@ -8,7 +8,7 @@ The output is given in HTML or plaintext.
 ![main](https://i.imgur.com/D7MT2KL.png)
 
 
-## help 
+## Help 
 
 ```
 usage: SecretFinder.py [-h] [-e] -i INPUT [-o OUTPUT] [-r REGEX] [-b]
