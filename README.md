@@ -42,6 +42,17 @@ optional arguments:
 
 ```
 
+## Installation
+
+SecretFinder supports Python 3.
+
+```
+$ git clone https://github.com/m4ll0k/SecretFinder.git secretfinder
+$ cd secretfinder
+$ python -m pip install -r requirements.txt or pip install -r requirements.txt
+$ python SecretFinder.py
+```
+
 ## Usage
 
 - Most basic usage to find the sensitive data with default regex in an online JavaScript file and output the HTML results to results.html:
@@ -62,7 +73,7 @@ optional arguments:
 
 - Process only certain js file provided by `-n --only`:
 
-`python3 SecretFinder.py -i https://example.com/ -e -n 'd3i4yxtzktqr9n.cloudfront.net;main.js'`
+`python3 SecretFinder.py -i https://example.com/ -e -n 'd3i4yxtzktqr9n.cloudfront.net;www.myexternaljs.com'`
 
 - Use your regex:
 
