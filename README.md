@@ -115,6 +115,8 @@ _regex = {
     'ssh_dc_private_key' : r'-----BEGIN EC PRIVATE KEY-----',
     'pgp_private_block' : r'-----BEGIN PGP PRIVATE KEY BLOCK-----',
     'json_web_token' : r'ey[A-Za-z0-9-_=]+\.[A-Za-z0-9-_=]+\.?[A-Za-z0-9-_.+/=]*$',
+    
+    'my_custom_regex' : r'my-regex-xxxxxxx',
 }
 
 ```
