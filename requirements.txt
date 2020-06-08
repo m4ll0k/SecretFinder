@@ -3,3 +3,4 @@ requests
 argparse
 jsbeautifier
 webbrowser
+lxml
