@@ -83,6 +83,15 @@ $ python SecretFinder.py
 
 ``python3 SecretFinder.py -i https://example.com/ -e -o cli -c 'mysessionid=111234' -H 'x-header:value1\nx-header2:value2' -p 127.0.0.1:8080 -r 'apikey=my.api.key[a-zA-Z]+'``
 
+- Input accept all this entries: 
+ 
+ - Url: e.g. https://www.google.com/ [-e] is required
+ - Js url: e.g. https://www.google.com/1.js 
+ - Folder: e.g. myjsfiles/*
+ - Local file: e.g /js/myjs/file.js
+
+
+
 
 ## add Regex
 
