@@ -2,5 +2,4 @@ requests_file
 requests 
 argparse
 jsbeautifier
-webbrowser
 lxml
