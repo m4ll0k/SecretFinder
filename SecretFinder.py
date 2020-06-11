@@ -38,9 +38,9 @@ _regex = {
     'amazon_mws_auth_toke' : r'amzn\\.mws\\.[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}',
     'amazon_aws_url' : r's3\.amazonaws.com[/]+|[a-zA-Z0-9_-]*\.s3\.amazonaws.com',
     'facebook_access_token' : r'EAACEdEose0cBA[0-9A-Za-z]+',
-    'authorization_basic' : r'basic\s*[a-zA-Z0-9=:_\+\/-]+',
-    'authorization_bearer' : r'bearer\s*[a-zA-Z0-9_\-\.=:_\+\/]+',
-    'authorization_api' : r'api[key|\s*]+[a-zA-Z0-9_\-]+',
+    'authorization_basic' : r'basic [a-zA-Z0-9=:_\+\/-]{5,100}',
+    'authorization_bearer' : r'bearer [a-zA-Z0-9_\-\.=:_\+\/]{5,100}',
+    'authorization_api' : r'api[key|_key|\s+]+[a-zA-Z0-9_\-]{5,100}',
     'mailgun_api_key' : r'key-[0-9a-zA-Z]{32}',
     'twilio_api_key' : r'SK[0-9a-fA-F]{32}',
     'twilio_account_sid' : r'AC[a-zA-Z0-9_\-]{32}',
@@ -173,7 +173,14 @@ def parser_file(content,mode=1,more_regex=None,no_dup=1):
         if items != []:
             all_items.append(items)
     if all_items != []:
-        all_items = all_items[0]
+        k = []
+        for i in range(len(all_items)):
+            for ii in all_items[i]:
+                if ii not in k:
+                    k.append(ii)
+        if k != []:
+            all_items = k
+
     if no_dup:
         all_matched = set()
         no_dup_items = []
@@ -183,7 +190,7 @@ def parser_file(content,mode=1,more_regex=None,no_dup=1):
                     all_matched.add(item['matched'])
                     no_dup_items.append(item)
         all_items = no_dup_items
-    
+
     filtered_items = []
     if all_items != []:
         for item in all_items:
@@ -388,6 +395,7 @@ if __name__ == "__main__":
         _regex.update({
             'custom_regex' : args.regex
         })
+
     if args.extract:
         content = send_request(args.input)
         urls = extractjsurl(content,args.input)
@@ -404,7 +412,7 @@ if __name__ == "__main__":
             file = url.get('js')
             url = url.get('url')
         
-        matched = parser_file(file,mode,args.regex)
+        matched = parser_file(file,mode)
         if args.output == 'cli':
             cli_output(matched)
         else:
