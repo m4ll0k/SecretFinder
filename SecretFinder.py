@@ -251,7 +251,7 @@ def html_save(output):
         else:
             webbrowser.open(file) 
     except Exception as err:
-        print('Output can\'t be saved in %s due to exception: %s'%(args.output,e))
+        print('Output can\'t be saved in %s due to exception: %s'%(args.output,err))
     finally:
         os.dup2(hide,1)
 
