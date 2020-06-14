@@ -24,6 +24,10 @@ from html import escape
 import urllib3
 import xml.etree.ElementTree
 
+# disable warning
+
+urllib3.disable_warnings()
+
 # for read local file with file:// protocol
 from requests_file import FileAdapter
 from lxml import html
