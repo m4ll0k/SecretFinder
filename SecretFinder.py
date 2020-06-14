@@ -354,6 +354,7 @@ def send_request(url):
     try:
         resp = requests.get(
             url = url,
+            verify = False,
             headers = headers, 
             proxies = proxies
         )
