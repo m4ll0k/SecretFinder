@@ -41,6 +41,12 @@ _regex = {
     'amazon_aws_access_key_id' : r'AKIA[0-9A-Z]{16}',
     'amazon_mws_auth_toke' : r'amzn\\.mws\\.[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}',
     'amazon_aws_url' : r's3\.amazonaws.com[/]+|[a-zA-Z0-9_-]*\.s3\.amazonaws.com',
+    'amazon_aws_url2' : r"(" \
+           r"[a-zA-Z0-9-\.\_]+\.s3\.amazonaws\.com" \
+           r"|s3://[a-zA-Z0-9-\.\_]+" \
+           r"|s3-[a-zA-Z0-9-\.\_\/]+" \
+           r"|s3.amazonaws.com/[a-zA-Z0-9-\.\_]+" \
+           r"|s3.console.aws.amazon.com/s3/buckets/[a-zA-Z0-9-\.\_]+)",
     'facebook_access_token' : r'EAACEdEose0cBA[0-9A-Za-z]+',
     'authorization_basic' : r'basic [a-zA-Z0-9=:_\+\/-]{5,100}',
     'authorization_bearer' : r'bearer [a-zA-Z0-9_\-\.=:_\+\/]{5,100}',
@@ -60,6 +66,13 @@ _regex = {
     'ssh_dc_private_key' : r'-----BEGIN EC PRIVATE KEY-----',
     'pgp_private_block' : r'-----BEGIN PGP PRIVATE KEY BLOCK-----',
     'json_web_token' : r'ey[A-Za-z0-9-_=]+\.[A-Za-z0-9-_=]+\.?[A-Za-z0-9-_.+/=]*$',
+    'slack_token' : r"\"api_token\":\"(xox[a-zA-Z]-[a-zA-Z0-9-]+)\"",
+    'SSH_privKey' : r"([-]+BEGIN [^\s]+ PRIVATE KEY[-]+[\s]*[^-]*[-]+END [^\s]+ PRIVATE KEY[-]+)",
+    'possible_Creds' : r"(?i)(" \
+                    r"password\s*[`=:\"]+\s*[^\s]+|" \
+                    r"password is\s*[`=:\"]*\s*[^\s]+|" \
+                    r"pwd\s*[`=:\"]*\s*[^\s]+|" \
+                    r"passwd\s*[`=:\"]+\s*[^\s]+)",
 }
 
 _template = '''
