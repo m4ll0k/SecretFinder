@@ -26,7 +26,7 @@ import xml.etree.ElementTree
 
 # disable warning
 
-urllib3.disable_warnings()
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 # for read local file with file:// protocol
 from requests_file import FileAdapter
