@@ -51,7 +51,7 @@ SecretFinder supports Python 3.
 $ git clone https://github.com/m4ll0k/SecretFinder.git secretfinder
 $ cd secretfinder
 $ python -m pip install -r requirements.txt or pip install -r requirements.txt
-$ python SecretFinder.py
+$ python3 SecretFinder.py
 ```
 
 ## Usage
