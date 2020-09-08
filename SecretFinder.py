@@ -36,6 +36,7 @@ from urllib.parse import urlparse
 # regex 
 _regex = {
     'google_api'     : r'AIza[0-9A-Za-z-_]{35}',
+    'firebase'  : r'AAAA[A-Za-z0-9_-]{7}:[A-Za-z0-9_-]{140}',
     'google_captcha' : r'6L[0-9A-Za-z-_]{38}|^6[0-9a-zA-Z_-]{39}$',
     'google_oauth'   : r'ya29\.[0-9A-Za-z\-_]+',
     'amazon_aws_access_key_id' : r'AKIA[0-9A-Z]{16}',
