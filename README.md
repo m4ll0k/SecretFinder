@@ -1,7 +1,7 @@
 
 ## about SecretFinder
 
-SecretFinder is a python script based on [LinkFinder](https://github.com/GerbenJavado/LinkFinder) (version for burpsuite [here](https://github.com/m4ll0k/BurpSuite-Secret_Finder)), written to discover sensitive data like apikeys, accesstoken, authorizations, jwt,..etc in JavaScript files. It does so by using jsbeautifier for python in combination with a fairly large regular expression. The regular expressions consists of four small regular expressions. These are responsible for finding and search anything on js files. 
+SecretFinder is a python script based on [LinkFinder](https://github.com/GerbenJavado/LinkFinder), written to discover sensitive data like apikeys, accesstoken, authorizations, jwt,..etc in JavaScript files. It does so by using jsbeautifier for python in combination with a fairly large regular expression. The regular expressions consists of four small regular expressions. These are responsible for finding and search anything on js files. 
 
 The output is given in HTML or plaintext.
 
