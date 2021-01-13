@@ -1,5 +1,4 @@
 requests_file
 requests 
-argparse
 jsbeautifier
 lxml
