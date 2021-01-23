@@ -453,10 +453,10 @@ if __name__ == "__main__":
                             no_dup.append(context)
                         # --
                 else:
-                    body += '</a><div class="container">%s</div></div>'%(match.get('context')[0])
+                    body += '</a><div class="container">%s</div></div>'%(match.get('context')[0] if len(match.get('context'))>1 else match.get('context'))
                     body = body.replace(
                         match.get('context')[0],
-                        '<span style="background-color:yellow">%s</span>'%(match.get('context')[0])
+                        '<span style="background-color:yellow">%s</span>'%(match.get('context') if len(match.get('context'))>1 else match.get('context'))
                     )
                 output += header + body 
     if args.output != 'cli':
