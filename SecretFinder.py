@@ -456,7 +456,7 @@ if __name__ == "__main__":
                 else:
                     body += '</a><div class="container">%s</div></div>'%(match.get('context')[0] if len(match.get('context'))>1 else match.get('context'))
                     body = body.replace(
-                        match.get('context')[0] if len(match.get('context'))>1 else match.get('context'),
+                        match.get('context')[0] if len(match.get('context')) > 0 else ''.join(match.get('context')),
                         '<span style="background-color:yellow">%s</span>'%(match.get('context') if len(match.get('context'))>1 else match.get('context'))
                     )
                 output += header + body 
