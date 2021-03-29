@@ -176,7 +176,7 @@ def parser_file(content,mode=1,more_regex=None,no_dup=1):
             content = jsbeautifier.beautify(content)
     all_items = []
     for regex in _regex.items():
-        r = re.compile(regex[1],re.VERBOSE)
+        r = re.compile(regex[1],re.VERBOSE|re.I)
         if mode == 1:
             all_matches = [(m.group(0),m.start(0),m.end(0)) for m in re.finditer(r,content)]
             items = getContext(all_matches,content,regex[0])
