@@ -1,7 +1,7 @@
 
 ## about SecretFinder
 
-SecretFinder is a python script based on [LinkFinder](https://github.com/GerbenJavado/LinkFinder), written to discover sensitive data like apikeys, accesstoken, authorizations, jwt,..etc in JavaScript files. It does so by using jsbeautifier for python in combination with a fairly large regular expression. The regular expressions consists of four small regular expressions. These are responsible for finding and search anything on js files. 
+SecretFinder is a python script based on [LinkFinder](https://github.com/GerbenJavado/LinkFinder), written to discover sensitive data like apikeys, accesstoken, authorizations, jwt,..etc in JavaScript files. It does so by using jsbeautifier for python in combination with a fairly large regular expression. The regular expressions consists of four small regular expressions. These are responsible for finding and search anything on js files.
 
 The output is given in HTML or plaintext.
 
@@ -9,7 +9,7 @@ The output is given in HTML or plaintext.
 
 
 
-## Help 
+## Help
 
 ```
 usage: SecretFinder.py [-h] [-e] -i INPUT [-o OUTPUT] [-r REGEX] [-b]
@@ -84,10 +84,10 @@ $ python3 SecretFinder.py
 
 ``python3 SecretFinder.py -i https://example.com/ -e -o cli -c 'mysessionid=111234' -H 'x-header:value1\nx-header2:value2' -p 127.0.0.1:8080 -r 'apikey=my.api.key[a-zA-Z]+'``
 
-- Input accept all this entries: 
- 
+- Input accept all this entries:
+
  - Url: e.g. https://www.google.com/ [-e] is required
- - Js url: e.g. https://www.google.com/1.js 
+ - Js url: e.g. https://www.google.com/1.js
  - Folder: e.g. myjsfiles/*
  - Local file: e.g /js/myjs/file.js
 
@@ -103,7 +103,7 @@ _regex = {
     'google_api'     : r'AIza[0-9A-Za-z-_]{35}',
     'google_captcha' : r'6L[0-9A-Za-z-_]{38}|^6[0-9a-zA-Z_-]{39}$',
     'google_oauth'   : r'ya29\.[0-9A-Za-z\-_]+',
-    'amazon_aws_access_key_id' : r'AKIA[0-9A-Z]{16}',
+    'amazon_aws_access_key_id' : r'A[SK]IA[0-9A-Z]{16}',
     'amazon_mws_auth_toke' : r'amzn\\.mws\\.[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}',
     'amazon_aws_url' : r's3\.amazonaws.com[/]+|[a-zA-Z0-9_-]*\.s3\.amazonaws.com',
     'facebook_access_token' : r'EAACEdEose0cBA[0-9A-Za-z]+',
@@ -125,8 +125,8 @@ _regex = {
     'ssh_dc_private_key' : r'-----BEGIN EC PRIVATE KEY-----',
     'pgp_private_block' : r'-----BEGIN PGP PRIVATE KEY BLOCK-----',
     'json_web_token' : r'ey[A-Za-z0-9-_=]+\.[A-Za-z0-9-_=]+\.?[A-Za-z0-9-_.+/=]*$',
-    
-    'name_for_my_regex' : r'my_regex', 
+
+    'name_for_my_regex' : r'my_regex',
     # for example
     'example_api_key'    : r'^example\w+{10,50}'
 }

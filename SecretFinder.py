@@ -1,4 +1,4 @@
-#!/usr/bin/env python 
+#!/usr/bin/env python
 # SecretFinder - Tool for discover apikeys/accesstokens and sensitive data in js file
 # based to LinkFinder - github.com/GerbenJavado
 # By m4ll0k (@m4ll0k2) github.com/m4ll0k
@@ -12,14 +12,14 @@ os.environ["BROWSER"] = "open"
 
 import re
 import glob
-import argparse 
-import jsbeautifier 
+import argparse
+import jsbeautifier
 import webbrowser
-import subprocess 
+import subprocess
 import base64
-import requests 
-import string 
-import random 
+import requests
+import string
+import random
 from html import escape
 import urllib3
 import xml.etree.ElementTree
@@ -33,13 +33,13 @@ from requests_file import FileAdapter
 from lxml import html
 from urllib.parse import urlparse
 
-# regex 
+# regex
 _regex = {
     'google_api'     : r'AIza[0-9A-Za-z-_]{35}',
     'firebase'  : r'AAAA[A-Za-z0-9_-]{7}:[A-Za-z0-9_-]{140}',
     'google_captcha' : r'6L[0-9A-Za-z-_]{38}|^6[0-9a-zA-Z_-]{39}$',
     'google_oauth'   : r'ya29\.[0-9A-Za-z\-_]+',
-    'amazon_aws_access_key_id' : r'AKIA[0-9A-Z]{16}',
+    'amazon_aws_access_key_id' : r'A[SK]IA[0-9A-Z]{16}',
     'amazon_mws_auth_toke' : r'amzn\\.mws\\.[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}',
     'amazon_aws_url' : r's3\.amazonaws.com[/]+|[a-zA-Z0-9_-]*\.s3\.amazonaws.com',
     'amazon_aws_url2' : r"(" \
@@ -135,7 +135,7 @@ _template = '''
 </head>
 <body contenteditable="true">
   $$content$$
-  
+
   <a class='button' contenteditable='false' href='https://github.com/m4ll0k/SecretFinder/issues/new' rel='nofollow noopener noreferrer' target='_blank'><span class='github-icon'><svg height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
   <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22" fill="none" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg></span> Report an issue.</a>
 </body>
@@ -162,7 +162,7 @@ def getContext(matches,content,name,rex='.+?'):
             'name'             : name,
             'context'          : context,
             'multi_context'    : True if len(context) > 1 else False
-        } 
+        }
         items.append(item)
     return items
 
@@ -219,11 +219,11 @@ def parser_file(content,mode=1,more_regex=None,no_dup=1):
             else:
                 filtered_items.append(item)
     return filtered_items
-        
+
 
 def parser_input(input):
     ''' Parser Input '''
-    # method 1 - url 
+    # method 1 - url
     schemes = ('http://','https://','ftp://','file://','ftps://')
     if input.startswith(schemes):
         return [input]
@@ -254,8 +254,8 @@ def parser_input(input):
         for index, path in enumerate(paths):
             paths[index] = "file://%s" % path
         return (paths if len(paths)> 0 else parser_error('Input with wildcard does not match any files.'))
-        
-    # method 5 - local file 
+
+    # method 5 - local file
     path = "file://%s"% os.path.abspath(input)
     return [path if os.path.exists(input) else parser_error('file could not be found (maybe you forgot to add http/https).')]
 
@@ -269,13 +269,13 @@ def html_save(output):
         text_file = open(args.output,"wb")
         text_file.write(_template.replace('$$content$$',output).encode('utf-8'))
         text_file.close()
-        
+
         print('URL to access output: file://%s'%os.path.abspath(args.output))
         file = 'file:///%s'%(os.path.abspath(args.output))
         if sys.platform == 'linux' or sys.platform == 'linux2':
             subprocess.call(['xdg-open',file])
         else:
-            webbrowser.open(file) 
+            webbrowser.open(file)
     except Exception as err:
         print('Output can\'t be saved in %s due to exception: %s'%(args.output,err))
     finally:
@@ -287,9 +287,9 @@ def cli_output(matched):
         print(match.get('name')+'\t->\t'+match.get('matched').encode('ascii','ignore').decode('utf-8'))
 
 def urlParser(url):
-    ''' urlParser ''' 
+    ''' urlParser '''
     parse = urlparse(url)
-    urlParser.this_root = parse.scheme + '://' + parse.netloc 
+    urlParser.this_root = parse.scheme + '://' + parse.netloc
     urlParser.this_path = parse.scheme + '://' + parse.netloc  + '/' + parse.path
 
 def extractjsurl(content,base_url):
@@ -298,7 +298,7 @@ def extractjsurl(content,base_url):
     all_src = []
     urlParser(base_url)
     for src in soup.xpath('//script'):
-        src = src.xpath('@src')[0] if src.xpath('@src') != [] else [] 
+        src = src.xpath('@src')[0] if src.xpath('@src') != [] else []
         if src != []:
             if src.startswith(('http://','https://','ftp://','ftps://')):
                 if src not in all_src:
@@ -308,15 +308,15 @@ def extractjsurl(content,base_url):
                 if src not in all_src:
                     all_src.append(src)
             elif src.startswith('/'):
-                src = urlParser.this_root + src 
+                src = urlParser.this_root + src
                 if src not in all_src:
                     all_src.append(src)
             else:
-                src = urlParser.this_path + src 
+                src = urlParser.this_path + src
                 if src not in all_src:
                     all_src.append(src)
     if args.ignore and all_src != []:
-        temp = all_src 
+        temp = all_src
         ignore = []
         for i in args.ignore.split(';'):
             for src in all_src:
@@ -325,20 +325,20 @@ def extractjsurl(content,base_url):
         if ignore:
             for i in ignore:
                 temp.pop(int(temp.index(i)))
-        return temp 
+        return temp
     if args.only:
-        temp = all_src 
+        temp = all_src
         only = []
         for i in args.only.split(';'):
             for src in all_src:
                 if i in src:
                     only.append(src)
-        return only 
+        return only
     return all_src
 
 def send_request(url):
-    ''' Send Request ''' 
-    # read local file 
+    ''' Send Request '''
+    # read local file
     # https://github.com/dashea/requests-file
     if 'file://' in url:
         s = requests.Session()
@@ -356,25 +356,25 @@ def send_request(url):
         for i in args.header.split('\\n'):
             # replace space and split
             name,value = i.replace(' ','').split(':')
-            headers[name] = value 
+            headers[name] = value
     # add cookies
     if args.cookie:
         headers['Cookie'] = args.cookie
 
     headers.update(default_headers)
-    # proxy 
+    # proxy
     proxies = {}
     if args.proxy:
         proxies.update({
             'http'  : args.proxy,
             'https' : args.proxy,
-            # ftp 
+            # ftp
         })
     try:
         resp = requests.get(
             url = url,
             verify = False,
-            headers = headers, 
+            headers = headers,
             proxies = proxies
         )
         return resp.content.decode('utf-8','replace')
@@ -399,8 +399,8 @@ if __name__ == "__main__":
     if args.input[-1:] == "/":
         # /aa/ -> /aa
         args.input = args.input[:-1]
-    
-    mode = 1 
+
+    mode = 1
     if args.output == "cli":
         mode = 0
     # add args
@@ -423,7 +423,7 @@ if __name__ == "__main__":
         # convert input to URLs or JS files
         urls = parser_input(args.input)
     # conver URLs to js file
-    output = '' 
+    output = ''
     for url in urls:
         print('[ + ] URL: '+url)
         if not args.burp:
@@ -431,7 +431,7 @@ if __name__ == "__main__":
         else:
             file = url.get('js')
             url = url.get('url')
-        
+
         matched = parser_file(file,mode)
         if args.output == 'cli':
             cli_output(matched)
@@ -459,6 +459,6 @@ if __name__ == "__main__":
                         match.get('context')[0] if len(match.get('context')) > 0 else ''.join(match.get('context')),
                         '<span style="background-color:yellow">%s</span>'%(match.get('context') if len(match.get('context'))>1 else match.get('context'))
                     )
-                output += header + body 
+                output += header + body
     if args.output != 'cli':
         html_save(output)
