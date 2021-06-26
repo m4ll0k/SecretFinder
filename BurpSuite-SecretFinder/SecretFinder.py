@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding:utf-8 -*-
 
-# SecretFinder: Burp Suite Extension to find and search apikeys/tokens from a webpage 
+# SecretFinder: Burp Suite Extension to find and search apikeys/tokens from a webpage
 # by m4ll0k
 # https://github.com/m4ll0k
 
@@ -50,7 +50,7 @@ class BurpExtender(IBurpExtender, IScannerCheck):
         'firebase' : 'AAAA[A-Za-z0-9_-]{7}:[A-Za-z0-9_-]{140}',
         'google_captcha' : '6L[0-9A-Za-z-_]{38}|^6[0-9a-zA-Z_-]{39}$',
         'google_oauth' : 'ya29\.[0-9A-Za-z\-_]+',
-        'amazon_aws_access_key_id' : 'AKIA[0-9A-Z]{16}',
+        'amazon_aws_access_key_id' : 'A[SK]IA[0-9A-Z]{16}',
         'amazon_mws_auth_toke' : 'amzn\\.mws\\.[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}',
         'amazon_aws_url' : 's3\.amazonaws.com[/]+|[a-zA-Z0-9_-]*\.s3\.amazonaws.com',
         'facebook_access_token' : 'EAACEdEose0cBA[0-9A-Za-z]+',
@@ -88,9 +88,9 @@ class BurpExtender(IBurpExtender, IScannerCheck):
 
         for reg in self.regexs.items():
             tmp_issues = self._CustomScans.findRegEx(
-                BurpExtender.regex.replace(r'%%regex%%',reg[1]), 
+                BurpExtender.regex.replace(r'%%regex%%',reg[1]),
                 BurpExtender.issuename%(' '.join([x.title() for x in reg[0].split('_')])),
-                BurpExtender.issuelevel, 
+                BurpExtender.issuelevel,
                 BurpExtender.issuedetail
                 )
             scan_issues = scan_issues + tmp_issues
@@ -110,7 +110,7 @@ class BurpExtender(IBurpExtender, IScannerCheck):
         for reg in self.regexs.items():
             tmp_issues = self._CustomScans.findRegEx(
                 BurpExtender.regex.replace(r'%%regex%%',reg[1]),
-                BurpExtender.issuename%(' '.join([x.title() for x in reg[0].split('_')])), 
+                BurpExtender.issuename%(' '.join([x.title() for x in reg[0].split('_')])),
                 BurpExtender.issuelevel,
                 BurpExtender.issuedetail
                 )
