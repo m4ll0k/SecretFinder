@@ -2,3 +2,4 @@ requests_file
 requests 
 jsbeautifier
 lxml
+urllib3
