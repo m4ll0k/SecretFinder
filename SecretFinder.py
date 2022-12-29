@@ -353,7 +353,7 @@ def send_request(url):
         'Accept-Encoding' : 'gzip'
     }
     if args.headers:
-        for i in args.header.split('\\n'):
+        for i in args.headers.split('\\n'):
             # replace space and split
             name,value = i.replace(' ','').split(':')
             headers[name] = value
