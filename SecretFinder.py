@@ -20,6 +20,7 @@ import base64
 import requests
 import string
 import random
+import time
 from html import escape
 import urllib3
 import xml.etree.ElementTree
@@ -378,6 +379,7 @@ def send_request(url):
             headers = headers,
             proxies = proxies
         )
+        time.sleep(float(args.delay)) # 0 by default
         return resp.content.decode('utf-8','replace')
     except Exception as err:
         print(err)
@@ -395,6 +397,7 @@ if __name__ == "__main__":
     parser.add_argument("-n","--only",help="Process js url, if it contain the provided string (string;string2..)",action="store",default="")
     parser.add_argument("-H","--headers",help="Set headers (\"Name:Value\\nName:Value\")",action="store",default="")
     parser.add_argument("-p","--proxy",help="Set proxy (host:port)",action="store",default="")
+    parser.add_argument("-d", "--delay", help="Set delay between requests", action="store", default=0)
     args = parser.parse_args()
 
     if args.input[-1:] == "/":
@@ -416,6 +419,13 @@ if __name__ == "__main__":
         _regex.update({
             'custom_regex' : args.regex
         })
+
+    try:
+        if float(args.delay) < 0:
+            raise ValueError
+    except ValueError:
+        print("The delay must be a positive number.")
+        sys.exit()
 
     if args.extract:
         content = send_request(args.input)
