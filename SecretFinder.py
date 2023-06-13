@@ -1,15 +1,10 @@
 #!/usr/bin/env python
-# SecretFinder - Tool for discover apikeys/accesstokens and sensitive data in js file
-# based to LinkFinder - github.com/GerbenJavado
+# SecretFinder - Tool for discovering apikeys/accesstokens and sensitive data in js files
+# based on LinkFinder - github.com/GerbenJavado
 # By m4ll0k (@m4ll0k2) github.com/m4ll0k
 
-
-import os,sys
-if not sys.version_info.major >= 3:
-    print("[ + ] Run this tool with python version 3.+")
-    sys.exit(0)
-os.environ["BROWSER"] = "open"
-
+import os
+import sys
 import re
 import glob
 import argparse
@@ -24,57 +19,93 @@ from html import escape
 import urllib3
 import xml.etree.ElementTree
 
-# disable warning
-
+# Disable warning
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-# for read local file with file:// protocol
+# For reading local file with file:// protocol
 from requests_file import FileAdapter
 from lxml import html
 from urllib.parse import urlparse
 
-# regex
+# Regex
 _regex = {
-    'google_api'     : r'AIza[0-9A-Za-z-_]{35}',
-    'firebase'  : r'AAAA[A-Za-z0-9_-]{7}:[A-Za-z0-9_-]{140}',
-    'google_captcha' : r'6L[0-9A-Za-z-_]{38}|^6[0-9a-zA-Z_-]{39}$',
-    'google_oauth'   : r'ya29\.[0-9A-Za-z\-_]+',
-    'amazon_aws_access_key_id' : r'A[SK]IA[0-9A-Z]{16}',
-    'amazon_mws_auth_toke' : r'amzn\\.mws\\.[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}',
-    'amazon_aws_url' : r's3\.amazonaws.com[/]+|[a-zA-Z0-9_-]*\.s3\.amazonaws.com',
-    'amazon_aws_url2' : r"(" \
-           r"[a-zA-Z0-9-\.\_]+\.s3\.amazonaws\.com" \
-           r"|s3://[a-zA-Z0-9-\.\_]+" \
-           r"|s3-[a-zA-Z0-9-\.\_\/]+" \
-           r"|s3.amazonaws.com/[a-zA-Z0-9-\.\_]+" \
-           r"|s3.console.aws.amazon.com/s3/buckets/[a-zA-Z0-9-\.\_]+)",
-    'facebook_access_token' : r'EAACEdEose0cBA[0-9A-Za-z]+',
-    'authorization_basic' : r'basic [a-zA-Z0-9=:_\+\/-]{5,100}',
-    'authorization_bearer' : r'bearer [a-zA-Z0-9_\-\.=:_\+\/]{5,100}',
-    'authorization_api' : r'api[key|_key|\s+]+[a-zA-Z0-9_\-]{5,100}',
-    'mailgun_api_key' : r'key-[0-9a-zA-Z]{32}',
-    'twilio_api_key' : r'SK[0-9a-fA-F]{32}',
-    'twilio_account_sid' : r'AC[a-zA-Z0-9_\-]{32}',
-    'twilio_app_sid' : r'AP[a-zA-Z0-9_\-]{32}',
-    'paypal_braintree_access_token' : r'access_token\$production\$[0-9a-z]{16}\$[0-9a-f]{32}',
-    'square_oauth_secret' : r'sq0csp-[ 0-9A-Za-z\-_]{43}|sq0[a-z]{3}-[0-9A-Za-z\-_]{22,43}',
+    'google_api': r'AIza[0-9A-Za-z-_]{35}',
+    'firebase': r'AAAA[A-Za-z0-9_-]{7}:[A-Za-z0-9_-]{140}',
+    'google_captcha': r'6L[0-9A-Za-z-_]{38}|^6[0-9a-zA-Z_-]{39}$',
+    'google_oauth': r'ya29\.[0-9A-Za-z\-_]+',
+    'amazon_aws_access_key_id': r'A[SK]IA[0-9A-Z]{16}',
+    'amazon_mws_auth_toke': r'amzn\\.mws\\.[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}',
+    'amazon_aws_url': r's3\.amazonaws.com[/]+|[a-zA-Z0-9_-]*\.s3\.amazonaws.com',
+    'amazon_aws_url2': r"(" \
+        r"[a-zA-Z0-9-\.\_]+\.s3\.amazonaws\.com" \
+        r"|s3://[a-zA-Z0-9-\.\_]+" \
+        r"|s3-[a-zA-Z0-9-\.\_\/]+" \
+        r"|s3.amazonaws.com/[a-zA-Z0-9-\.\_]+" \
+        r"|s3.console.aws.amazon.com/s3/buckets/[a-zA-Z0-9-\.\_]+)",
+    'facebook_access_token': r'EAACEdEose0cBA[0-9A-Za-z]+',
+    'authorization_basic': r'basic [a-zA-Z0-9=:_\+\/-]{5,100}',
+    'authorization_bearer': r'bearer [a-zA-Z0-9_\-\.=:_\+\/]{5,100}',
+    'authorization_api': r'api[key|_key|\s+]+[a-zA-Z0-9_\-]{5,100}',
+    'mailgun_api_key': r'key-[0-9a-zA-Z]{32}',
+    'twilio_api_key': r'SK[0-9a-fA-F]{32}',
+    'twilio_account_sid': r'AC[a-zA-Z0-9_\-]{32}',
+    'twilio_app_sid': r'AP[a-zA-Z0-9_\-]{32}',
+    'paypal_braintree_access_token': r'access_token\$production\$[0-9a-z]{16}\$[0-9a-f]{32}',
     'square_access_token' : r'sqOatp-[0-9A-Za-z\-_]{22}|EAAA[a-zA-Z0-9]{60}',
     'stripe_standard_api' : r'sk_live_[0-9a-zA-Z]{24}',
-    'stripe_restricted_api' : r'rk_live_[0-9a-zA-Z]{24}',
-    'github_access_token' : r'[a-zA-Z0-9_-]*:[a-zA-Z0-9_\-]+@github\.com*',
-    'rsa_private_key' : r'-----BEGIN RSA PRIVATE KEY-----',
-    'ssh_dsa_private_key' : r'-----BEGIN DSA PRIVATE KEY-----',
-    'ssh_dc_private_key' : r'-----BEGIN EC PRIVATE KEY-----',
-    'pgp_private_block' : r'-----BEGIN PGP PRIVATE KEY BLOCK-----',
-    'json_web_token' : r'ey[A-Za-z0-9-_=]+\.[A-Za-z0-9-_=]+\.?[A-Za-z0-9-_.+/=]*$',
-    'slack_token' : r"\"api_token\":\"(xox[a-zA-Z]-[a-zA-Z0-9-]+)\"",
-    'SSH_privKey' : r"([-]+BEGIN [^\s]+ PRIVATE KEY[-]+[\s]*[^-]*[-]+END [^\s]+ PRIVATE KEY[-]+)",
-    'Heroku API KEY' : r'[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}',
-    'possible_Creds' : r"(?i)(" \
-                    r"password\s*[`=:\"]+\s*[^\s]+|" \
-                    r"password is\s*[`=:\"]*\s*[^\s]+|" \
-                    r"pwd\s*[`=:\"]*\s*[^\s]+|" \
-                    r"passwd\s*[`=:\"]+\s*[^\s]+)",
+    'stripe_standard_api': r'sk_live_[0-9a-zA-Z]{24}',
+    'stripe_restricted_api': r'rk_live_[0-9a-zA-Z]{24}',
+    'github': r'[a-zA-Z0-9_-]*:[a-zA-Z0-9_-]+@github\.com*',
+    'instagram': r'instagram\.com/(?:.*\?v=|p/|tv/|stories/)([0-9A-Za-z_-]+)',
+    'instagram_access_token': r'[iI][nN][sS][tT][aA][gG][rR][aA][mM]\.[a-zA-Z0-9_\-]+\.[a-zA-Z0-9_\-]+',
+    'picatic_api_key': r'sk_live_[0-9a-z]{32}',
+    'base64': r'[a-zA-Z0-9_\-]{10,}={0,2}',
+    'mailchimp_api_key': r'[0-9a-f]{32}-us[0-9]{1,2}',
+    'mailchimp_api': r'[0-9a-f]{32}-us[0-9]{1,2}',
+    'twilio_api': r'SK[a-z0-9]{32}',
+    'google_oauth_access_token': r'ya29\\.[0-9A-Za-z\\-_]+',
+    'slack_webhook': r'https:\/\/hooks\.slack\.com\/services\/T[a-zA-Z0-9_\-]+\/B[a-zA-Z0-9_\-]+\/[a-zA-Z0-9_\-]+',
+    'ssh': r'ssh-[a-zA-Z]{1,3} [a-zA-Z0-9+/]{15,}[=]{0,3}',
+    'ssh_ecdsa_private': r'-----BEGIN OPENSSH PRIVATE KEY----',
+    'ssh_dsa_private': r'-----BEGIN DSA PRIVATE KEY-----',
+    'ssh_rsa_private': r'-----BEGIN RSA PRIVATE KEY-----',
+    'smtp': r'(smtp\.|mail\.)[a-zA-Z0-9_\-]+\.[a-zA-Z0-9_\-]+',
+    'slack_token': r"xox[baprs]-([0-9a-zA-Z]{10,48})?",
+    'github_token': r'[a-zA-Z0-9_-]*:[a-zA-Z0-9_\-]+@github\.com*',
+    'slack_webhook1': r"https:\/\/hooks\.slack\.com\/services\/T[a-zA-Z0-9_\-]{9}\/B[a-zA-Z0-9_\-]{9}\/[a-zA-Z0-9_\-]{24}",
+    'slack_webhook2': r"https:\/\/hooks\.slack\.com\/services\/[a-zA-Z0-9_\-]{24}\/[a-zA-Z0-9_\-]{36}",
+    'google_cloud_platform': r'AIza[0-9A-Za-z-_]{35}',
+    'google_cloud_platform2': r'ya29\\.[0-9A-Za-z\\-_]+',
+    'google_api': r'AIza[0-9A-Za-z-_]{35}',
+    'google_captcha': r'6L[0-9A-Za-z-_]{38}|^6[0-9a-zA-Z_-]{39}$',
+    'google_oauth': r'ya29\\.[0-9A-Za-z\\-_]+',
+    'firebase': r'[a-zA-Z0-9_-]+\.firebaseio\.com',
+    'slack_token2': r"xoxb-[0-9]{12}-[0-9]{12}-[a-zA-Z0-9]{24}",
+    'slack_token3': r"xoxb-[0-9]{12}-[0-9]{12}-[A-z0-9_-]{1,36}",
+    'slack_token4': r"xoxb-[0-9]{12}-[0-9]{12}-[0-9a-zA-Z]{24}",
+    'heroku_api': r'[a-z]{4,5}://api\.heroku\.com',
+    'mailgun_api': r'key-[0-9a-zA-Z]{32}',
+    'mailgun_domain': r'[a-zA-Z0-9_.-]+\.[a-zA-Z]{2,12}',
+    'twilio_api2': r'SK[a-z0-9]{32}',
+    'facebook_access_token': r'[A-Za-z0-9]{125}',
+    'authorization_bearer': r'Bearer [a-zA-Z0-9_\-\.=]+',
+    'authorization_basic': r'Basic [a-zA-Z0-9_\-\.=]+',
+    'slack_token5': r"SLACK_TOKEN = '[x0-9A-Z]{9}-[x0-9A-Z]{9}-[x0-9a-z]{24}'",
+    'jwt_token': r'eyJ[a-zA-Z0-9-_=]+',
+    'ssh_private': r'-----BEGIN(.*?)PRIVATE KEY-----',
+    'ssh_public': r'ssh-[a-zA-Z]{1,3} [0-9a-zA-Z+/]+[=]{0,3}',
+    'twitch_oauth': r'[a-zA-Z0-9]{30}',
+    'slack_api': r'xox[pbatrs]-[0-9]{12}-[0-9]{12}-[a-zA-Z0-9]{24}',
+    'docker_config': r'-----BEGIN DOCKER CONFIG-----',
+    'sendgrid_api_key': r'SG\.[a-zA-Z0-9_\-]{22}\.[a-zA-Z0-9_\-]{43}',
+    'google_oauth2': r'ya29\\.[0-9A-Za-z\\-_]+',
+    'google_api_key': r'[AIzaSyA-z0-9]{39}',
+    'discord_token': r'[MN][A-Za-z\d]{23}\.[\w-]{6}\.[\w-]{27}|mfa\.[\w-]{84}',
+    'discord_token2': r'[0-9a-zA-Z]{24}\.[0-9a-zA-Z]{6}\.[0-9a-zA-Z-_]{27}',
+    'discord_token3': r'[\w-]{24}\.[\w-]{6}\.[\w-]{27}',
+    'discord_token4': r'[a-zA-Z0-9_-]{24}\.[a-zA-Z0-9_-]{6}\.[a-zA-Z0-9_-]{27}',
+    'discord_token5': r'[a-zA-Z0-9_-]{24}\.[a-zA-Z0-9_-]{6}\.[a-zA-Z0-9_-]{27}',
+    'discord_webhook': r'https:\/\/(?:canary|ptb)\.?discord(?:app)?\.com\/api\/webhooks\/\d{18}\/[a-zA-Z0-9_-]{68,72}'
 }
 
 _template = '''
