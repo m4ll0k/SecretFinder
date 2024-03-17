@@ -397,7 +397,7 @@ if __name__ == "__main__":
     parser.add_argument("-n","--only",help="Process js url, if it contain the provided string (string;string2..)",action="store",default="")
     parser.add_argument("-H","--headers",help="Set headers (\"Name:Value\\nName:Value\")",action="store",default="")
     parser.add_argument("-p","--proxy",help="Set proxy (host:port)",action="store",default="")
-    parser.add_argument("-d", "--delay", help="Set delay between requests", action="store", default=0)
+    parser.add_argument("-d", "--delay", help="Set delay between requests (i.e. 1 second=1, 500ms=0.5)", action="store", default=0)
     args = parser.parse_args()
 
     if args.input[-1:] == "/":
