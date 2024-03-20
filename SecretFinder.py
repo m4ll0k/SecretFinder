@@ -20,6 +20,7 @@ import base64
 import requests
 import string
 import random
+import time
 from html import escape
 import urllib3
 import xml.etree.ElementTree
@@ -42,12 +43,12 @@ _regex = {
     'amazon_aws_access_key_id' : r'A[SK]IA[0-9A-Z]{16}',
     'amazon_mws_auth_toke' : r'amzn\\.mws\\.[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}',
     'amazon_aws_url' : r's3\.amazonaws.com[/]+|[a-zA-Z0-9_-]*\.s3\.amazonaws.com',
-    'amazon_aws_url2' : r"(" \
+    'amazon_aws_url2' : r"\(" \
            r"[a-zA-Z0-9-\.\_]+\.s3\.amazonaws\.com" \
            r"|s3://[a-zA-Z0-9-\.\_]+" \
            r"|s3-[a-zA-Z0-9-\.\_\/]+" \
            r"|s3.amazonaws.com/[a-zA-Z0-9-\.\_]+" \
-           r"|s3.console.aws.amazon.com/s3/buckets/[a-zA-Z0-9-\.\_]+)",
+           r"|s3.console.aws.amazon.com/s3/buckets/[a-zA-Z0-9-\.\_]+\)",
     'facebook_access_token' : r'EAACEdEose0cBA[0-9A-Za-z]+',
     'authorization_basic' : r'basic [a-zA-Z0-9=:_\+\/-]{5,100}',
     'authorization_bearer' : r'bearer [a-zA-Z0-9_\-\.=:_\+\/]{5,100}',
@@ -67,14 +68,14 @@ _regex = {
     'ssh_dc_private_key' : r'-----BEGIN EC PRIVATE KEY-----',
     'pgp_private_block' : r'-----BEGIN PGP PRIVATE KEY BLOCK-----',
     'json_web_token' : r'ey[A-Za-z0-9-_=]+\.[A-Za-z0-9-_=]+\.?[A-Za-z0-9-_.+/=]*$',
-    'slack_token' : r"\"api_token\":\"(xox[a-zA-Z]-[a-zA-Z0-9-]+)\"",
-    'SSH_privKey' : r"([-]+BEGIN [^\s]+ PRIVATE KEY[-]+[\s]*[^-]*[-]+END [^\s]+ PRIVATE KEY[-]+)",
+    'slack_token' : r"\"api_token\":\"\(xox[a-zA-Z]-[a-zA-Z0-9-]+\)\"",
+    'SSH_privKey' : r"\([-]+BEGIN [^\s]+ PRIVATE KEY[-]+[\s]*[^-]*[-]+END [^\s]+ PRIVATE KEY[-]+\)",
     'Heroku API KEY' : r'[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}',
-    'possible_Creds' : r"(?i)(" \
+    'possible_Creds' : r"\(?i\)\(" \
                     r"password\s*[`=:\"]+\s*[^\s]+|" \
                     r"password is\s*[`=:\"]*\s*[^\s]+|" \
                     r"pwd\s*[`=:\"]*\s*[^\s]+|" \
-                    r"passwd\s*[`=:\"]+\s*[^\s]+)",
+                    r"passwd\s*[`=:\"]+\s*[^\s]+\)",
 }
 
 _template = '''
@@ -155,6 +156,7 @@ def getContext(matches,content,name,rex='.+?'):
         if i not in matches2:
             matches2.append(i)
     for m in matches2:
+        m = m.replace('(','\\(').replace(')','\\)') # Escape parenthesis to avoid regex error
         context = re.findall('%s%s%s'%(rex,m,rex),content,re.IGNORECASE)
 
         item = {
@@ -353,7 +355,7 @@ def send_request(url):
         'Accept-Encoding' : 'gzip'
     }
     if args.headers:
-        for i in args.header.split('\\n'):
+        for i in args.headers.split('\\n'):
             # replace space and split
             name,value = i.replace(' ','').split(':')
             headers[name] = value
@@ -377,6 +379,7 @@ def send_request(url):
             headers = headers,
             proxies = proxies
         )
+        time.sleep(float(args.delay)) # 0 by default
         return resp.content.decode('utf-8','replace')
     except Exception as err:
         print(err)
@@ -394,6 +397,7 @@ if __name__ == "__main__":
     parser.add_argument("-n","--only",help="Process js url, if it contain the provided string (string;string2..)",action="store",default="")
     parser.add_argument("-H","--headers",help="Set headers (\"Name:Value\\nName:Value\")",action="store",default="")
     parser.add_argument("-p","--proxy",help="Set proxy (host:port)",action="store",default="")
+    parser.add_argument("-d", "--delay", help="Set delay between requests (i.e. 1 second=1, 500ms=0.5)", action="store", default=0)
     args = parser.parse_args()
 
     if args.input[-1:] == "/":
@@ -415,6 +419,13 @@ if __name__ == "__main__":
         _regex.update({
             'custom_regex' : args.regex
         })
+
+    try:
+        if float(args.delay) < 0:
+            raise ValueError
+    except ValueError:
+        print("The delay must be a positive number.")
+        sys.exit()
 
     if args.extract:
         content = send_request(args.input)

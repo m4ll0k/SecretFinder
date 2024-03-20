@@ -12,34 +12,29 @@ The output is given in HTML or plaintext.
 ## Help
 
 ```
-usage: SecretFinder.py [-h] [-e] -i INPUT [-o OUTPUT] [-r REGEX] [-b]
-                       [-c COOKIE] [-g IGNORE] [-n ONLY] [-H HEADERS]
-                       [-p PROXY]
+usage: SecretFinder.py [-h] [-e] -i INPUT [-o OUTPUT] [-r REGEX] [-b] [-c COOKIE] [-g IGNORE] [-n ONLY] [-H HEADERS] [-p PROXY] [-d DELAY]
 
-optional arguments:
+options:
   -h, --help            show this help message and exit
-  -e, --extract         Extract all javascript links located in a page and
-                        process it
+  -e, --extract         Extract all javascript links located in a page and process it
   -i INPUT, --input INPUT
                         Input a: URL, file or folder
   -o OUTPUT, --output OUTPUT
-                        Where to save the file, including file name. Default:
-                        output.html
+                        Where to save the file, including file name. Default: output.html
   -r REGEX, --regex REGEX
-                        RegEx for filtering purposes against found endpoint
-                        (e.g: ^/api/)
+                        RegEx for filtering purposes against found endpoint (e.g: ^/api/)
   -b, --burp            Support burp exported file
   -c COOKIE, --cookie COOKIE
                         Add cookies for authenticated JS files
   -g IGNORE, --ignore IGNORE
-                        Ignore js url, if it contain the provided string
-                        (string;string2..)
-  -n ONLY, --only ONLY  Process js url, if it contain the provided string
-                        (string;string2..)
+                        Ignore js url, if it contain the provided string (string;string2..)
+  -n ONLY, --only ONLY  Process js url, if it contain the provided string (string;string2..)
   -H HEADERS, --headers HEADERS
                         Set headers ("Name:Value\nName:Value")
   -p PROXY, --proxy PROXY
                         Set proxy (host:port)
+  -d DELAY, --delay DELAY
+                        Set delay between requests
 
 ```
 
@@ -48,7 +43,7 @@ optional arguments:
 SecretFinder supports Python 3.
 
 ```
-$ git clone https://github.com/m4ll0k/SecretFinder.git secretfinder
+$ git clone https://github.com/PolEspurnes/SecretFinder.git secretfinder
 $ cd secretfinder
 $ python -m pip install -r requirements.txt or pip install -r requirements.txt
 $ python3 SecretFinder.py
